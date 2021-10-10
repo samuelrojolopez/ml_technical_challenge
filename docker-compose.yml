@@ -10,13 +10,13 @@ services:
     container_name: postgres3
     ports:
       - "32769:5432"
-    #volumes:
-      #- ./mnt/postgres:/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./mnt/postgres:/var/lib/postgresql/data/pgdata
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=airflow_db
-      #- PGDATA=/var/lib/postgresql/data/pgdata
+      - PGDATA=/var/lib/postgresql/data/pgdata
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "airflow_db", "-U", "airflow" ]
       timeout: 45s
@@ -73,59 +73,6 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
-
-  # The services below are only useful if you want
-  # to use YARN with HADOOP. Since we are going to use
-  # only the HDFS, we can skip them.
-
-  #resourcemanager:
-  #  build: ./docker/hadoop/hadoop-resourcemanager
-  #  restart: always
-  #  container_name: resourcemanager
-  #  depends_on:
-  #    - namenode
-  #    - datanode
-  #  environment:
-  #    - SERVICE_PRECONDITION=namenode:9870 datanode:9864
-  #  healthcheck:
-  #    test: [ "CMD", "nc", "-z", "resourcemanager", "8088" ]
-  #    timeout: 45s
-  #    interval: 10s
-  #    retries: 10
-
-  #nodemanager:
-  #  build: ./docker/hadoop/hadoop-nodemanager
-  #  restart: always
-  #  container_name: nodemanager
-  #  depends_on:
-  #    - namenode
-  #    - datanode
-  #    - resourcemanager
-  #  environment:
-  #    - SERVICE_PRECONDITION=namenode:9870 datanode:9864 resourcemanager:8088
-  #  healthcheck:
-  #    test: [ "CMD", "nc", "-z", "nodemanager", "8042" ]
-  #    timeout: 45s
-  #    interval: 10s
-  #    retries: 10
-
-  #historyserver:
-  #  build: ./docker/hadoop/hadoop-historyserver
-  #  restart: always
-  #  container_name: historyserver
-  #  volumes:
-  #    - ./mnt/hadoop/historyserver:/hadoop/yarn/timeline
-  #  depends_on:
-  #    - namenode
-  #    - datanode
-  #    - resourcemanager
-  #  environment:
-  #    - SERVICE_PRECONDITION=namenode:9870 datanode:9864 resourcemanager:8088
-  #  healthcheck:
-  #    test: [ "CMD", "nc", "-z", "historyserver", "8188" ]
-  #    timeout: 45s
-  #    interval: 10s
-  #    retries: 10
 
   hive-metastore:
     build: ./docker/hive/hive-metastore
@@ -186,7 +133,7 @@ services:
     ports:
       - "32762:8888"
     volumes:
-      - ./mnt/hue/hue.ini:/usr/share/hue/desktop/conf/z-hue.ini
+      - ./hue/hue.ini:/usr/share/hue/desktop/conf/z-hue.ini
     environment:
       - SERVICE_PRECONDITION=hive-server:10000 postgres:5432
     healthcheck:
@@ -256,9 +203,8 @@ services:
     restart: always
     container_name: airflow3
     volumes:
-      - ./mnt/airflow:/usr/local/airflow
-      - ./mnt/airflow/dags:/usr/local/airflow/dags
-      - ./mnt/reports:/usr/local/reports
+      - ./airflow:/usr/local/airflow
+      - ./airflow/dags:/usr/local/airflow/dags
     ports:
       - 8080:8080
     healthcheck:
