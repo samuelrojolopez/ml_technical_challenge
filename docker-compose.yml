@@ -204,6 +204,7 @@ services:
     container_name: airflow3
     volumes:
       - ./airflow:/usr/local/airflow
+      - ./data:/usr/local/airflow/data
       - ./airflow/dags:/usr/local/airflow/dags
     ports:
       - 8080:8080
