@@ -66,6 +66,11 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
+# Airflow stuff:
+airflow.db
+airflow-webserver.pid
+*/logs/
+
 # Flask stuff:
 instance/
 .webassets-cache
