@@ -168,8 +168,7 @@ services:
     ports:
       - "32764:8081"
     volumes:
-      - ./spark/apps:/opt/spark-apps
-      - ./spark/data:/opt/spark-data
+      - ./data/processed_data/:/opt/spark-data
     healthcheck:
       test: [ "CMD", "nc", "-z", "spark-worker", "8081" ]
       timeout: 45s
@@ -204,7 +203,6 @@ services:
     container_name: airflow3
     volumes:
       - ./airflow:/usr/local/airflow
-      - ./data:/usr/local/airflow/data
       - ./airflow/dags:/usr/local/airflow/dags
     ports:
       - 8080:8080
