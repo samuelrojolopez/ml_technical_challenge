@@ -7,7 +7,7 @@ services:
   postgres:
     build: './docker/postgres'
     restart: always
-    container_name: postgres3
+    container_name: postgres
     ports:
       - "32769:5432"
     volumes:
@@ -26,7 +26,7 @@ services:
   adminer:
     image: wodby/adminer:latest
     restart: always
-    container_name: adminer3
+    container_name: adminer
     ports:
       - "32767:9000"
     environment:
@@ -45,7 +45,7 @@ services:
   namenode:
     build: ./docker/hadoop/hadoop-namenode
     restart: always
-    container_name: namenode3
+    container_name: namenode
     ports:
       - "32763:9870"
     volumes:
@@ -61,7 +61,7 @@ services:
   datanode:
     build: ./docker/hadoop/hadoop-datanode
     restart: always
-    container_name: datanode3
+    container_name: datanode
     depends_on:
       - namenode
     volumes:
@@ -77,7 +77,7 @@ services:
   hive-metastore:
     build: ./docker/hive/hive-metastore
     restart: always
-    container_name: hive-metastore3
+    container_name: hive-metastore
     depends_on:
       - namenode
       - datanode
@@ -95,7 +95,7 @@ services:
   hive-server:
     build: ./docker/hive/hive-server
     restart: always
-    container_name: hive-server3
+    container_name: hive-server
     depends_on:
       - hive-metastore
     environment:
@@ -112,7 +112,7 @@ services:
   hive-webhcat:
     build: ./docker/hive/hive-webhcat
     restart: always
-    container_name: hive-webhcat3
+    container_name: hive-webhcat
     depends_on:
       - hive-server
     environment:
@@ -126,7 +126,7 @@ services:
   hue:
     build: ./docker/hue
     restart: always
-    container_name: hue3
+    container_name: hue
     depends_on:
       - hive-server
       - postgres
@@ -148,13 +148,13 @@ services:
   spark-master:
     build: ./docker/spark/spark-master
     restart: always
-    container_name: spark-master3
+    container_name: spark-master
     ports:
       - "32766:8082"
       - "32765:7077"
     volumes:
       - ./mnt/spark/apps:/opt/spark-apps
-      - ./mnt/spark/data:/opt/spark-data
+      - ./data:/opt/spark-data
     healthcheck:
       test: [ "CMD", "nc", "-z", "spark-master", "8082" ]
       timeout: 45s
@@ -168,8 +168,10 @@ services:
     ports:
       - "32764:8081"
     volumes:
-      - ./mnt/spark/apps:/opt/spark-apps
-      - ./mnt/spark/data:/opt/spark-data
+      - ./spark/apps:/opt/spark-apps
+      - ./data:/opt/spark-data
+    environment:
+      SPARK_WORKER_OPTS: -Dspark.worker.cleanup.enabled=true
     healthcheck:
       test: [ "CMD", "nc", "-z", "spark-worker", "8081" ]
       timeout: 45s
@@ -179,7 +181,7 @@ services:
   livy:
     build: ./docker/livy
     restart: always
-    container_name: livy3
+    container_name: livy
     depends_on:
       - spark-worker
     ports:
@@ -201,7 +203,7 @@ services:
   airflow:
     build: ./docker/airflow
     restart: always
-    container_name: airflow3
+    container_name: airflow
     volumes:
       - ./airflow:/usr/local/airflow
       - ./data:/usr/local/airflow/data

@@ -180,9 +180,10 @@ data_frame = add_feature_own_car_flag(data_frame)
 processed_credit_df = credit_fe_columns_subset(data_frame,
                                                columns=selected_columns)
 
-# Write results to parquet
+# Write results to hive
 processed_credit_df.write.mode("overwrite").insertInto("credit_fraud_features")
 
-# Write the results to hive
-processed_credit_df.write.mode("append")\
-    .parquet("/opt/spark-data/credit_fraud_features.csv")
+# # Write the results to parquet
+processed_credit_df.cache()
+processed_credit_df.write.mode("overwrite")\
+    .parquet("/dataset_credit_risk/credit_risk_features.parquet")

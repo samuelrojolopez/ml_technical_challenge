@@ -1,5 +1,21 @@
 # ML Challenge
 
+_Disclaimer:_ Due to issues in the development of the cluster environment time was consumed
+and left no time to follow the implementation on cloud with secret management done to be 
+implemented in any user AWS account. 
+
+The Github actions for testing left mocked as an echo statement due to time constraint
+to write the tests required for every function, but a regression check is described in
+the 'Features engineering by function' notebook contained in the notebook folder.
+
+The implementation steps remained to be implemented are:
+- Infraestructure in AWS for AWS Glue Triggers (to use the Glue Scheduler Trigger) using CLI
+- Workflow to deploy the Train image into ECR to be used by Sagemaker Training Jobs
+- Warehouse Queries to achieve the Features API requirement
+- Predictions API that consumes the Features API and the Sagemaker Endpoint
+- Implementation of the lambda functions that consume to work as Features API and Predictions API
+- Cloud Formation Script to manage the overall services infra
+
 ## Description
 
 The code contained in this repository aims to show an MLOPs PoC, where the 
@@ -53,4 +69,35 @@ code contained in the notebooks, and the diagrams as code scripts contained
 here.
 
 `pip install -r requirements.txt`
+
+#### Airflow Connections
+
+The airflow scheduler needs to implement the connections with the
+spark and hive containers, this has to be done manually due issues
+with the airflow CLI.
+
+##### Hive connection
+- Conn Id: hive_conn
+- Conn Type: Hive Server 2 Thrift
+- Login: hive
+- Password: hive
+- Port: 10000
+
+##### Spark connection
+- Conn Id: spark_conn
+- Conn Type: Spark
+- Host: spark://spark-master
+- Port: 7077
+
+#### Training
+
+The train folder contains a train_local shell script 
+that runs a training job in a containerized environment,
+consuming the outputs folder of the feature process and
+writes the finished module in the specified model channel.
+
+This image should work directly in Sagemaker training job.
+
+*Issue, the imblearn has a dependency issue not fixed yet.
+
 
