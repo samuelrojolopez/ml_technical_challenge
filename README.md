@@ -70,6 +70,26 @@ here.
 
 `pip install -r requirements.txt`
 
+#### Data and Outputs
+The only previous requirements needed to run is the input
+data, and an output folder placed at root level.
+
+```
+ml_technical_challenge/
+    ...
+    |---.github
+        |---
+        ...
+    |---airflow
+        |--- ...
+    |---data/
+          |---processed_data/
+          |---raw_data/
+    |---output/
+    |---.gitignore
+    ...
+```
+
 #### Airflow Connections
 
 The airflow scheduler needs to implement the connections with the
@@ -89,6 +109,9 @@ with the airflow CLI.
 - Host: spark://spark-master
 - Port: 7077
 
+After setting up the conections, activate the DAG and
+wait for the process to complete.
+
 #### Training
 
 The train folder contains a train_local shell script 
@@ -96,8 +119,9 @@ that runs a training job in a containerized environment,
 consuming the outputs folder of the feature process and
 writes the finished module in the specified model channel.
 
+You can run the trainin job by running:
+
+`./train_local.sh`
+
+
 This image should work directly in Sagemaker training job.
-
-*Issue, the imblearn has a dependency issue not fixed yet.
-
-
