@@ -54,3 +54,21 @@ here.
 
 `pip install -r requirements.txt`
 
+#### Airflow Connections
+
+The airflow scheduler needs to implement the connections with the
+spark and hive containers, this have to be done manually due issues
+with the airflow CLI.
+
+##### Hive connection
+- Conn Id: hive_conn
+- Conn Type: Hive Server 2 Thrift
+- Login: hive
+- Password: hive
+- Port: 10000
+
+##### Spark connection
+- Conn Id: spark_conn
+- Conn Type: Spark
+- Host: spark://spark-master
+- Port: 7077
