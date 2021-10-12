@@ -73,7 +73,7 @@ here.
 #### Airflow Connections
 
 The airflow scheduler needs to implement the connections with the
-spark and hive containers, this have to be done manually due issues
+spark and hive containers, this has to be done manually due issues
 with the airflow CLI.
 
 ##### Hive connection
@@ -88,3 +88,16 @@ with the airflow CLI.
 - Conn Type: Spark
 - Host: spark://spark-master
 - Port: 7077
+
+#### Training
+
+The train folder contains a train_local shell script 
+that runs a training job in a containerized environment,
+consuming the outputs folder of the feature process and
+writes the finished module in the specified model channel.
+
+This image should work directly in Sagemaker training job.
+
+*Issue, the imblearn has a dependency issue not fixed yet.
+
+
