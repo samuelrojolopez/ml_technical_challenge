@@ -72,6 +72,9 @@ airflow-webserver.pid
 */logs/
 .bash_history
 
+# Postgres stuff:
+postgres/
+
 # Flask stuff:
 instance/
 .webassets-cache
