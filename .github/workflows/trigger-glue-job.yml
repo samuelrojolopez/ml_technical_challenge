@@ -1,0 +1,82 @@
+name: Create Glue Job trigger
+
+# on: [push]
+# on:
+#   push:
+#     branches:
+#       - '**'
+
+on:
+  # [workflow_dispatch]
+  [workflow_dispatch]
+
+concurrency: ci-trigger-glue-job-${{ github.ref }}
+jobs:
+  changedfiles:
+    runs-on: ubuntu-latest
+    name: Get changed files
+    outputs:
+      target_env: ${{ steps.setenv.outputs.target_env }}
+      short_target_env: ${{ steps.setenv.outputs.short_target_env }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set BRANCH env variable
+        run: 
+          echo "BRANCH=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_ENV
+
+      - name: Set target_env and short_target_env
+        id: setenv
+        run: |
+          echo -e BRANCH: $BRANCH
+          if [ "$BRANCH" = development ]
+          then
+            echo "::set-output name=short_target_env::dev"
+            echo "::set-output name=target_env::development"
+          elif [ "$BRANCH" = main ]
+          then
+            echo "::set-output name=short_target_env::pro"
+            echo "::set-output name=target_env::production"
+          else
+            echo "::set-output name=short_target_env::dev"
+            echo "::set-output name=target_env::development"
+            echo -e "Not in MAIN or DEV branches"
+          fi
+
+  deploy:
+    name: Create/Update trigger
+    needs: [changedfiles]
+    if: ${{needs.changedfiles.outputs.target_env && ((github.ref == 'refs/heads/development') || (github.ref == 'refs/heads/main')) }}
+    runs-on: ubuntu-latest
+    environment: ${{ needs.changedfiles.outputs.target_env }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set ENV variables
+        run: IFS=$'\n' ; for v in `cat .github/workflows/.env.${{ needs.changedfiles.outputs.short_target_env }}` ; do echo "${v}" >> $GITHUB_ENV ; done
+
+      - name: Configure AWS Credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: get-caller-identity
+        run: aws sts get-caller-identity
+
+
+      - name: Set env var
+        run: 
+          echo "TARGET_ENV=${{ needs.changedfiles.outputs.short_target_env }}" >> $GITHUB_ENV
+
+      - name: Execute create-update-trigger.sh
+        run: |
+          bash ./.github/workflows/create-update-trigger.sh $JOB_NAME $TRIGGER_NAME $TRIGGER_TYPE "$TRIGGER_CRONJOB"
+          
