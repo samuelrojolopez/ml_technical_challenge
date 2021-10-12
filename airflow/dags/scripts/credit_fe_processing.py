@@ -185,4 +185,4 @@ processed_credit_df.write.mode("overwrite").insertInto("credit_fraud_features")
 
 # Write the results to hive
 processed_credit_df.write.mode("append")\
-    .parquet("/dataset_credit_risk/dataset_credit_risk.csv")
+    .parquet("/opt/spark-data/credit_fraud_features.csv")

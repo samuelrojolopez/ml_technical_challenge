@@ -29,8 +29,7 @@ with DAG(dag_id="dataset_credit_to_hdfs", schedule_interval="@daily",
         bash_command=
         """
             hdfs dfs -mkdir -p /dataset_credit_risk && \
-            hdfs dfs -mkdir -p /dataset_credit_risk_processed && \
-            hdfs dfs -put -f $AIRFLOW_HOME/data/raw_data/dataset_credit_risk.csv /dataset_credit_risk
+            hdfs dfs -put -f $AIRFLOW_HOME/data/raw_data/dataset_credit_risk.csv/dataset_credit_risk
         """
     )
 
@@ -41,11 +40,11 @@ with DAG(dag_id="dataset_credit_to_hdfs", schedule_interval="@daily",
                 CREATE EXTERNAL TABLE IF NOT EXISTS credit_fraud_features(
                     id INT,
                     age INT,
-                    nb_previous_loans INT,
-                    flag_own_car INT,
-                    ,
                     years_on_the_job DOUBLE,
-                    avg_amount_loans_previous DOUBLE
+                    nb_previous_loans INT,
+                    avg_amount_loans_previous DOUBLE,
+                    flag_own_car INT,
+                    status INT
                     )
                 ROW FORMAT DELIMITED
                 FIELDS TERMINATED BY ','
@@ -54,20 +53,12 @@ with DAG(dag_id="dataset_credit_to_hdfs", schedule_interval="@daily",
     )
 
     read_credit_dataset = SparkSubmitOperator(
-        task_id="read_credit_dataset_from_hdfs",
-        application="/usr/local/airflow/dags/scripts/credit_fe_processing.py",
+        task_id="process_credit_dataset_from_hdfs",
+        application="$AIRFLOW_HOME/dags/scripts/credit_fe_processing.py",
         conn_id="spark_conn",
         verbose=False
     )
 
-    copy_dataset_credit_processed = BashOperator(
-        task_id="copy_dataset_to_hdfs",
-        bash_command=
-        """
-            hdfs dfs -copyToLocal /dataset_credit_risk_processed/credit_risk_features.csv $AIRFLOW_HOME/data/processed_data/credit_risk_features.csv
-        """
-    )
 
     copy_dataset_credit_raw >> creating_fraud_features_table
     creating_fraud_features_table >> read_credit_dataset
-    read_credit_dataset >> copy_dataset_credit_processed
