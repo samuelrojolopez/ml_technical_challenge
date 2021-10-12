@@ -74,6 +74,7 @@ here.
 The only previous requirements needed to run is the input
 data, and an output folder placed at root level.
 
+```
 ml_technical_challenge/
     ...
     |---.github
@@ -87,6 +88,7 @@ ml_technical_challenge/
     |---output/
     |---.gitignore
     ...
+```
 
 #### Airflow Connections
 
