@@ -34,11 +34,6 @@ jobs:
     name: test
     runs-on: ubuntu-latest
 
-    container: 
-      image: amazon/aws-glue-libs:glue_libs_1.0.0_image_01
-      volumes:
-        - ${{ github.workspace }}:/usr/src/MasterTableLH12
-
     steps:
       - uses: actions/checkout@v2
 
