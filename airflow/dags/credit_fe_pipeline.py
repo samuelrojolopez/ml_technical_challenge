@@ -45,13 +45,20 @@ with DAG(dag_id="dataset_credit_to_hdfs", schedule_interval="@daily",
             """
     )
 
-    read_credit_dataset = SparkSubmitOperator(
+    process_features = SparkSubmitOperator(
         task_id="process_credit_dataset_from_hdfs",
         application="/usr/local/airflow/dags/scripts/credit_fe_processing.py",
         conn_id="spark_conn",
         verbose=False
     )
 
+    get_processed_features = BashOperator(
+        task_id="get_features_from_hdfs",
+        bash_command=
+        """
+            hdfs dfs -get -f /dataset_credit_risk/credit_risk_features.parquet $AIRFLOW_HOME/data/processed_data/credit_risk_features.parquet
+        """
+    )
 
     copy_dataset_credit_raw >> creating_fraud_features_table
-    creating_fraud_features_table >> read_credit_dataset
+    creating_fraud_features_table >> process_features >> get_processed_features
