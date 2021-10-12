@@ -70,6 +70,7 @@ db.sqlite3-journal
 airflow.db
 airflow-webserver.pid
 */logs/
+.bash_history
 
 # Flask stuff:
 instance/
