@@ -1,5 +1,21 @@
 # ML Challenge
 
+_Disclaimer:_ Due to issues in the development of the cluster environment time was consumed
+and left no time to follow the implementation on cloud with secret management done to be 
+implemented in any user AWS account. 
+
+The Github actions for testing left mocked as an echo statement due to time constraint
+to write the tests required for every function, but a regression check is described in
+the 'Features engineering by function' notebook contained in the notebook folder.
+
+The implementation steps remained to be implemented are:
+- Infraestructure in AWS for AWS Glue Triggers (to use the Glue Scheduler Trigger) using CLI
+- Workflow to deploy the Train image into ECR to be used by Sagemaker Training Jobs
+- Warehouse Queries to achieve the Features API requirement
+- Predictions API that consumes the Features API and the Sagemaker Endpoint
+- Implementation of the lambda functions that consume to work as Features API and Predictions API
+- Cloud Formation Script to manage the overall services infra
+
 ## Description
 
 The code contained in this repository aims to show an MLOPs PoC, where the 
