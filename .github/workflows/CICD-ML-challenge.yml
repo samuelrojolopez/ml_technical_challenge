@@ -10,8 +10,6 @@ env:
 
 jobs:
   lint:
-    needs: [changedfiles,changes]
-    if: ${{needs.changedfiles.outputs.paths}}
     name: lint
     runs-on: ubuntu-latest
 
